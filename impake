@@ -6,6 +6,7 @@ me="${0##*/}"
 default_expiry='1w'
 storage_url='https://file.io'
 expires_parameter='expires'
+upload_failure_throttle='30'
 
 if [ $# -lt 1 ]; then
 	echo "Usage: $me file_or_directory ..." 1>&2
@@ -63,6 +64,7 @@ for f in $files; do
 		response=$(curl -F "file=@${f}" "${storage_url}/?${expires_parameter}=${default_expiry}")
 		test "$(echo "$response" | jq -r '.success'  2>/dev/null)" = 'true' && break
 		test $t -eq 6 || echo "Upload failed, retrying: ${t}/5" 1>&2
+		sleep "$upload_failure_throttle"
 	done
 	if [ $? -gt 0 ]; then
 		echo 'Aborting after 5 attempts.' 1>&2
