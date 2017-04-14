@@ -26,7 +26,7 @@ else
 fi
 trap 'rm -rf "$tmpdir"' EXIT
 
-archive_basename="$(uuidgen)"
+archive_basename=$(uuidgen | tr 'A-Z' 'a-z')
 7z a -m0=lzma2 -p -mhe=on -v2g "${tmpdir}/$archive_basename" "$@"
 
 cd "$tmpdir"
