@@ -68,7 +68,7 @@ for f in $files; do
 		exit 1
 	fi
 	urls="${urls:-}$(echo "$response" | jq -r '.link') "
-	expiry="$(echo "$response" | jq -r '.expiry')"
+	expiry=$(echo "$response" | jq -r '.expiry')
 done
 
 echo
