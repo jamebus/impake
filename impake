@@ -13,6 +13,15 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 
+# IDEA
+#
+# -h|--help
+# -t|--type type of archive (otherwise auto-detect)
+# -e|--encrypt
+# -c|--compress (auto if no arg)
+# -v|--volumesize (size of volume)
+#
+
 for tool in 7z jq curl; do
 	which "$tool" >/dev/null 2>&1 || missing="${missing:-}${tool} "
 done
