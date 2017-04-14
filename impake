@@ -12,7 +12,6 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 
-# TODO: put somewhere other than /tmp by default
 
 # BSD
 if mktemp -d -u -t "$me" >/dev/null 2>&1; then
@@ -25,6 +24,11 @@ else
 	exit 1
 fi
 trap 'rm -rf "$tmpdir"' EXIT
+
+# TODO: archive type (even none)
+#       compression type
+#       encrypt or not
+#       volume size including none
 
 archive_basename=$(uuidgen | tr 'A-Z' 'a-z')
 7z a -m0=lzma2 -p -mhe=on -v2g "${tmpdir}/$archive_basename" "$@"
