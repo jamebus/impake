@@ -32,6 +32,14 @@ else
 fi
 trap 'rm -rf "$tmpdir"' EXIT
 
+for thing in "$@"; do
+	test -e "$thing" || missing="${missing:-}\"${thing}\" "
+done
+if [ -n "${missing:-}" ]; then
+	echo "Does not exist: ${missing% }. Aborting." 1>&2
+	exit 1
+fi
+
 # TODO: archive type (even none)
 #       compression type
 #       encrypt or not
