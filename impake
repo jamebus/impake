@@ -8,7 +8,7 @@ storage_url='https://file.io'
 expires_parameter='expires'
 
 if [ $# -lt 1 ]; then
-	echo "Usage: $me file ..." 1>&2
+	echo "Usage: $me file_or_directory ..." 1>&2
 	exit 1
 fi
 
