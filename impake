@@ -60,7 +60,8 @@ fi
 
 for f in $files; do
 	for t in 1 2 3 4 5 6; do
-		response="$(curl -F "file=@${f}" "${storage_url}/?${expires_parameter}=${default_expiry}")" && break
+		response=$(curl -F "file=@${f}" "${storage_url}/?${expires_parameter}=${default_expiry}")
+		test "$(echo "$response" | jq -r '.success'  2>/dev/null)" = 'true' && break
 		test $t -eq 6 || echo "Upload failed, retrying: ${t}/5" 1>&2
 	done
 	if [ $? -gt 0 ]; then
