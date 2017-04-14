@@ -33,8 +33,10 @@ else
 fi
 trap 'rm -rf "$tmpdir"' EXIT
 
+test $# -gt 1 && have_things=1
 for thing in "$@"; do
 	test -e "$thing" || missing="${missing:-}\"${thing}\" "
+	test -d "$thing" && have_things=1
 done
 if [ -n "${missing:-}" ]; then
 	echo "Does not exist: ${missing% }. Aborting." 1>&2
