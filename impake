@@ -89,6 +89,16 @@ if [ $# -eq 0 ]; then
 	exit 1
 fi
 
+test $# -gt 1 && have_things=1
+for thing in "$@"; do
+	test -e "$thing" || missing="${missing:-}\"${thing}\" "
+	test -z "${have_things:-}" && test -d "$thing" && have_things=1
+done
+if [ -n "${missing:-}" ]; then
+	echo "Does not exist: ${missing% }. Aborting." 1>&2
+	exit 1
+fi
+
 for tool in 7z jq curl; do
 	which "$tool" >/dev/null 2>&1 || missing="${missing:-}${tool} "
 done
@@ -108,16 +118,6 @@ else
 	exit 1
 fi
 trap 'rm -rf "$tmpdir"' EXIT
-
-test $# -gt 1 && have_things=1
-for thing in "$@"; do
-	test -e "$thing" || missing="${missing:-}\"${thing}\" "
-	test -z "${have_things:-}" && test -d "$thing" && have_things=1
-done
-if [ -n "${missing:-}" ]; then
-	echo "Does not exist: ${missing% }. Aborting." 1>&2
-	exit 1
-fi
 
 archive_basename=$(uuidgen | tr 'A-Z' 'a-z')
 7z a -m0=lzma2 -p -mhe=on -v2g "${tmpdir}/$archive_basename" "$@"
