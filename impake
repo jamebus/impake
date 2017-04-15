@@ -29,6 +29,66 @@ usage() {
 
 test $# -lt 1 && usage 1
 
+while [ $# -ne 0 ]; do
+	opt=''
+	arg=''
+	case $1 in
+		--*=*)
+			opt=$(echo "$1" | awk -F= '{print $1}')
+			arg=$(echo "$1" | awk -F= '{print $2}')
+			shift
+			;;
+		-*)
+			opt=$1
+			shift
+			case ${1:-} in
+				-*)
+					:;;
+				*)
+					# -e doesn't want an argument
+					if [ ! "$opt" = '-e' ]; then
+						arg="${1:-}"
+						test $# -gt 0 && shift
+					fi
+					;;
+			esac
+	esac
+
+	case $opt in
+		-c|--compress)
+			opt_compress="1"
+			opt_compress_arg="$arg"
+			;;
+		-e|--encrypt)
+			opt_encrypt="1"
+			;;
+		-h|--help)
+			usage
+			;;
+		-s|--size)
+			opt_size="1"
+			opt_size_arg="$arg"
+			;;
+		-t|--type)
+			opt_type="1"
+			opt_type_arg="$arg"
+			;;
+		-*|--*)
+			echo "Unknown option: $opt"
+			exit 1
+			;;
+		*)
+			break
+			;;
+	esac
+done
+
+if [ $# -eq 0 ]; then
+	echo 'Cowardly refusing to send nothing'
+	echo "Try '${me} --help' for more information"
+	exit 1
+fi
+
 for tool in 7z jq curl; do
 	which "$tool" >/dev/null 2>&1 || missing="${missing:-}${tool} "
 done
