@@ -122,9 +122,7 @@ fi
 
 if [ \( -z "${opt_type:-}" -o "${opt_type:-}" = 'none' \) -a \
      -n "${have_things:-}" ]; then
-	command='tar'
-	command_args='cvf'
-	archive_extension='tar'
+	opt_type='tar'
 	echo 'Notice: Using tar(1) to build the archive'
 fi
 
