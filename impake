@@ -29,6 +29,11 @@ usage() {
 	exit $rc
 }
 
+suggest_help() {
+	echo "Try '$me --help' for more information"
+	exit 1
+}
+
 test $# -lt 1 && usage 1
 
 while [ $# -ne 0 ]; do
@@ -85,12 +90,6 @@ while [ $# -ne 0 ]; do
 	esac
 done
 
-if [ $# -eq 0 ]; then
-	echo 'Cowardly refusing to send nothing'
-	echo "Try '${me} --help' for more information"
-	exit 1
-fi
-
 test $# -gt 1 && have_things=1
 for thing in "$@"; do
 	test -e "$thing" || missing="${missing:-}\"${thing}\" "
@@ -99,6 +98,11 @@ done
 if [ -n "${missing:-}" ]; then
 	echo "Does not exist: ${missing% }. Aborting." 1>&2
 	exit 1
+fi
+
+if [ $# -eq 0 ]; then
+	echo 'Cowardly refusing to send nothing'
+	suggest_help
 fi
 
 for tool in 7z jq curl; do
