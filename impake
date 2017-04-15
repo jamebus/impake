@@ -11,7 +11,7 @@ upload_failure_throttle='30'
 usage() {
 	local rc
 	rc=${1:-0}
-	echo "Usage: $me file_or_directory ..."
+	echo "Usage: $me [options] file_or_directory ..."
 	echo
 	echo '       -c, --compress Compression method:'
 	echo '                      single file: bzip2, gzip, lzma, xz'
@@ -24,6 +24,8 @@ usage() {
 	echo '                      zip and 7z only'
 	echo '       -t, --type     Archive type:'
 	echo '                      none (single file), zip, 7z, tar'
+	echo
+	echo "Sensible defaults will be chosen if an option isn't specified"
 	exit $rc
 }
 
