@@ -100,6 +100,26 @@ if [ -n "${missing:-}" ]; then
 	exit 1
 fi
 
+if [ -n "${opt_type:-}" ]; then
+	case "$opt_type_arg" in
+		none|zip|7z|tar) :;;
+		*)
+			echo "Invalid argument to type: $opt_type_arg"
+			exit 1
+			;;
+	esac
+fi
+
+if [ -n "${opt_compress:-}" ]; then
+	case "$opt_compress_arg" in
+		bzip2|copy|deflate|deflate64|gzip|lzma|lzma2|ppmd|xz) :;;
+		*)
+			echo "Invalid argument to compress: $opt_compress_arg"
+			exit 1
+			;;
+esac
+fi
+
 if [ $# -eq 0 ]; then
 	echo 'Cowardly refusing to send nothing'
 	suggest_help
