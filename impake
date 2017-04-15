@@ -8,19 +8,26 @@ storage_url='https://file.io'
 expires_parameter='expires'
 upload_failure_throttle='30'
 
-if [ $# -lt 1 ]; then
-	echo "Usage: $me file_or_directory ..." 1>&2
-	exit 1
-fi
+usage() {
+	local rc
+	rc=${1:-0}
+	echo "Usage: $me file_or_directory ..."
+	echo
+	echo '       -c, --compress Compression method:'
+	echo '                      single file: bzip2, gzip, lzma, xz'
+	echo '                      zip:         bzip2, copy, deflate, deflate64, lzma, ppmd'
+	echo '                      7z:          bzip2, copy, deflate, lzma, lzma2, ppmd'
+	echo '                      tar:         bzip2, gzip, xz'
+	echo '       -e, --encrypt  Enable encryption, zip and 7z only'
+	echo "       -h, --help     You're looking at it :)"
+	echo '       -s, --size     Create multi-volume archive of this size,'
+	echo '                      zip and 7z only'
+	echo '       -t, --type     Archive type:'
+	echo '                      none (single file), zip, 7z, tar'
+	exit $rc
+}
 
-# IDEA
-#
-# -h|--help
-# -t|--type type of archive (otherwise auto-detect)
-# -e|--encrypt
-# -c|--compress (auto if no arg)
-# -v|--volumesize (size of volume)
-#
+test $# -lt 1 && usage 1
 
 for tool in 7z jq curl; do
 	which "$tool" >/dev/null 2>&1 || missing="${missing:-}${tool} "
@@ -51,11 +58,6 @@ if [ -n "${missing:-}" ]; then
 	echo "Does not exist: ${missing% }. Aborting." 1>&2
 	exit 1
 fi
-
-# TODO: archive type (even none)
-#       compression type
-#       encrypt or not
-#       volume size including none
 
 archive_basename=$(uuidgen | tr 'A-Z' 'a-z')
 7z a -m0=lzma2 -p -mhe=on -v2g "${tmpdir}/$archive_basename" "$@"
