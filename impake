@@ -126,6 +126,12 @@ if [ \( -z "${opt_type:-}" -o "${opt_type:-}" = 'none' \) -a \
 	echo 'Notice: Using tar(1) to build the archive'
 fi
 
+if [ \( -z "${opt_type:-}" -o "${opt_type:-}" = 'none' \) -a \
+     -n "${opt_encrypt:-}" ]; then
+	opt_type='7z'
+	echo 'Notice: Using 7z(1) to build the archive'
+fi
+
 if [ $# -eq 0 ]; then
 	echo 'Cowardly refusing to send nothing'
 	suggest_help
