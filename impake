@@ -138,36 +138,55 @@ if [ -z "${opt_type:-}" -a -n "${have_things:-}" ]; then
 	echo 'Notice: Using tar(1) to build the archive'
 fi
 
+if [ -z "${opt_type:-}" -o "${opt_type_arg:-}" = 'none' ]; then
+	archive_command=''
+	archive_arguments=''
+	archive_filename_extension=''
+	test -n "${opt_encrypt:-}" && \
+	  fail "Can't encrypt archive type ${opt_type_arg}"
+	test -n "${opt_size:-}" && \
+	  fail "Can't create volumes with archive type ${opt_type_arg}"
+	# TODO compression
+elif [ "$opt_type_arg" = '7z' ]; then
+	archive_command='7z'
+	archive_arguments='a'
+	archive_filename_extension='.7z'
+	test -n "${opt_encrypt:-}" && \
+	  $archive_arguments="$archive_arguments -p -mhe=on"
+	test -n "${opt_size:-}" && \
+	  $archive_arguments="$archive_arguments -v${$opt_size_arg}"
+	# TODO compression
+elif [ "$opt_type_arg" = 'zip' ]; then
+	archive_command='7z'
+	archive_arguments='a -tzip'
+	archive_filename_extension='.zip'
+	test -n "${opt_encrypt:-}" && \
+	  $archive_arguments="$archive_arguments -p"
+	test -n "${opt_size:-}" && \
+	  $archive_arguments="$archive_arguments -v${$opt_size_arg}"
+	# TODO compression
+elif [ "$opt_type_arg" = 'tar' ]; then
+	archive_command='tar'
+	archive_arguments='cvf'
+	archive_filename_extension='.tar'
+	test -n "${opt_encrypt:-}" && \
+	  fail "Can't encrypt archive type ${opt_type_arg}"
+	test -n "${opt_size:-}" && \
+	  fail "Can't create volumes with archive type ${opt_type_arg}"
+	# TODO compression
+fi
+
+if [ $# -eq 0 ]; then
+	echo 'Cowardly refusing to send nothing'
+	suggest_help
+fi
+
 for tool in 7z jq curl; do
 	which "$tool" >/dev/null 2>&1 || missing="${missing:-}${tool} "
 done
 if [ -n "${missing:-}" ]; then
 	echo "Missing: ${missing% }. Aborting." 1>&2
 	exit 1
-fi
-
-if [ -n "${opt_type:-}" ]; then
-	if [ -z "${opt_type_arg:-}" -o "${opt_type_arg:-}" = 'none' ]; then
-		archive_command=''
-		archive_arguments=''
-		archive_filename_extension=''
-	elif [ "$opt_type_arg" = '7z' ]; then
-		archive_command='7z'
-		archive_arguments='a'
-		archive_filename_extension='.7z'
-	elif [ "$opt_type_arg" = 'zip' ]; then
-		archive_command='7z'
-		archive_arguments='a -tzip'
-		archive_filename_extension='.zip'
-	elif [ "$opt_type_arg" = 'tar' ]; then
-		archive_command='tar'
-		archive_arguments='cvf'
-		archive_filename_extension='.tar'
-	fi
-
-if [ $# -eq 0 ]; then
-	echo 'Cowardly refusing to send nothing'
-	suggest_help
 fi
 
 # BSD
@@ -183,7 +202,7 @@ fi
 trap 'rm -rf "$tmpdir"' EXIT
 
 archive_basename=$(uuidgen | tr 'A-Z' 'a-z')
-7z a -m0=lzma2 -p -mhe=on -v2g "${tmpdir}/$archive_basename" "$@"
+$archive_command $archive_arguments "${tmpdir}/$archive_basename" "$@"
 
 cd "$tmpdir"
 echo
