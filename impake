@@ -122,13 +122,15 @@ fi
 
 if [ \( -z "${opt_type:-}" -o "${opt_type:-}" = 'none' \) -a \
      -n "${opt_encrypt:-}" ]; then
-	opt_type='7z'
+	opt_type='1'
+	opt_type_arg='7z'
 	echo 'Notice: Using 7z(1) to build the archive'
 fi
 
 if [ \( -z "${opt_type:-}" -o "${opt_type:-}" = 'none' \) -a \
      -n "${have_things:-}" ]; then
-	opt_type='tar'
+	opt_type='1'
+	opt_type_arg='tar'
 	echo 'Notice: Using tar(1) to build the archive'
 fi
 
