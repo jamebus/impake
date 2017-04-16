@@ -139,11 +139,6 @@ if [ \( -z "${opt_type:-}" -o "${opt_type:-}" = 'none' \) -a \
 	echo 'Notice: Using tar(1) to build the archive'
 fi
 
-if [ $# -eq 0 ]; then
-	echo 'Cowardly refusing to send nothing'
-	suggest_help
-fi
-
 for tool in 7z jq curl; do
 	which "$tool" >/dev/null 2>&1 || missing="${missing:-}${tool} "
 done
@@ -170,6 +165,10 @@ if [ -n "${opt_type:-}" ]; then
 		archive_arguments='cvf'
 		archive_filename_extension='.tar'
 	fi
+
+if [ $# -eq 0 ]; then
+	echo 'Cowardly refusing to send nothing'
+	suggest_help
 fi
 
 # BSD
