@@ -147,6 +147,26 @@ if [ -n "${missing:-}" ]; then
 	exit 1
 fi
 
+if [ -n "${opt_type:-}" ]; then
+	if [ -z "${opt_type_arg:-}" -o "${opt_type_arg:-}" = 'none' ]; then
+		archive_command=''
+		archive_arguments=''
+		archive_filename_extension=''
+	elif [ "$opt_type_arg" = '7z' ]; then
+		archive_command='7z'
+		archive_arguments='a'
+		archive_filename_extension='.7z'
+	elif [ "$opt_type_arg" = 'zip' ]; then
+		archive_command='7z'
+		archive_arguments='a -tzip'
+		archive_filename_extension='.zip'
+	elif [ "$opt_type_arg" = 'tar' ]; then
+		archive_command='tar'
+		archive_arguments='cvf'
+		archive_filename_extension='.tar'
+	fi
+fi
+
 # BSD
 if mktemp -d -u -t "$me" >/dev/null 2>&1; then
 	tmpdir=$(mktemp -d -t "$me")
