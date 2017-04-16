@@ -34,6 +34,11 @@ suggest_help() {
 	exit 1
 }
 
+fail() {
+	echo "ERROR: $1"
+	exit 1
+}
+
 test $# -lt 1 && usage 1
 
 while [ $# -ne 0 ]; do
