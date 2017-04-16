@@ -207,11 +207,15 @@ $archive_command $archive_arguments "${tmpdir}/$archive_basename" "$@"
 cd "$tmpdir"
 echo
 
-if [ ! -f "${archive_basename}.7z.002" ]; then
-	mv "${archive_basename}.7z.001" "${archive_basename}.7z"
-	files="${archive_basename}.7z"
+if [ -f "${archive_basename}${archive_filename_extension}.001" -a \
+     ! -f "${archive_basename}${archive_filename_extension}.002" ]; then
+	mv "${archive_basename}${archive_filename_extension}.001" \
+	  "${archive_basename}${archive_filename_extension}"
+	files="${archive_basename}${archive_filename_extension}"
+elif [ -f "${archive_basename}${archive_filename_extension}.001" ]; then
+	files="${archive_basename}${archive_filename_extension}.*"
 else
-	files="${archive_basename}.7z.*"
+	files="${archive_basename}${archive_filename_extension}"
 fi
 
 for f in $files; do
