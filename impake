@@ -36,6 +36,7 @@ suggest_help() {
 
 fail() {
 	echo "ERROR: $1"
+	echo "ERROR: $1" 1>&2
 	exit 1
 }
 
