@@ -39,6 +39,10 @@ fail() {
 	exit 1
 }
 
+notice() {
+	echo "Notice: $1"
+}
+
 test $# -lt 1 && usage 1
 
 while [ $# -ne 0 ]; do
@@ -129,13 +133,13 @@ if [ -z "${opt_type:-}" -a \
      \( -n "${opt_encrypt:-}" -o -n "${opt_size:-}" \) ]; then
 	opt_type='1'
 	opt_type_arg='7z'
-	echo 'Notice: Using 7z(1) to build the archive'
+	notice 'Using 7z(1) to build the archive'
 fi
 
 if [ -z "${opt_type:-}" -a -n "${have_things:-}" ]; then
 	opt_type='1'
 	opt_type_arg='tar'
-	echo 'Notice: Using tar(1) to build the archive'
+	notice 'Using tar(1) to build the archive'
 fi
 
 if [ -z "${opt_type:-}" -o "${opt_type_arg:-}" = 'none' ]; then
