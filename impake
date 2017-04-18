@@ -176,7 +176,30 @@ elif [ "$opt_type_arg" = '7z' ]; then
 	  $archive_arguments="$archive_arguments -p -mhe=on"
 	test -n "${opt_size:-}" && \
 	  $archive_arguments="$archive_arguments -v${$opt_size_arg}"
-	# TODO compression
+	if [ -n "${opt_compress:-}" ]; then
+	  case $opt_compress_arg in
+	    bzip2)
+	      archive_arguments="$archive_arguments -m0=bzip2"
+	      ;;
+	    copy)
+	      archive_arguments="$archive_arguments -m0=copy"
+	      ;;
+	    deflate)
+	      archive_arguments="$archive_arguments -m0=deflate"
+	      ;;
+	    lzma)
+	      archive_arguments="$archive_arguments -m0=lzma"
+	      ;;
+	    lzma2)
+	      archive_arguments="$archive_arguments -m0=lzma2"
+	      ;;
+	    ppmd)
+	      archive_arguments="$archive_arguments -m0=ppmd"
+	      ;;
+	    *)
+	      fail "Unsupported compression method $opt_compress_arg for archive type $opt_type_arg"
+	  esac
+	fi
 elif [ "$opt_type_arg" = 'zip' ]; then
 	archive_command='7z'
 	archive_arguments='a -tzip'
@@ -185,7 +208,30 @@ elif [ "$opt_type_arg" = 'zip' ]; then
 	  $archive_arguments="$archive_arguments -p"
 	test -n "${opt_size:-}" && \
 	  $archive_arguments="$archive_arguments -v${$opt_size_arg}"
-	# TODO compression
+	if [ -n "${opt_compress:-}" ]; then
+	  case $opt_compress_arg in
+	    bzip2)
+	      archive_arguments="$archive_arguments -m0=bzip2"
+	      ;;
+	    copy)
+	      archive_arguments="$archive_arguments -m0=copy"
+	      ;;
+	    deflate)
+	      archive_arguments="$archive_arguments -m0=deflate"
+	      ;;
+	    deflate64)
+	      archive_arguments="$archive_arguments -m0=deflate64"
+	      ;;
+	    lzma)
+	      archive_arguments="$archive_arguments -m0=lzma"
+	      ;;
+	    ppmd)
+	      archive_arguments="$archive_arguments -m0=ppmd"
+	      ;;
+	    *)
+	      fail "Unsupported compression method $opt_compress_arg for archive type $opt_type_arg"
+	  esac
+	fi
 elif [ "$opt_type_arg" = 'tar' ]; then
 	archive_command='tar'
 	archive_arguments='cvf'
@@ -194,7 +240,24 @@ elif [ "$opt_type_arg" = 'tar' ]; then
 	  fail "Can't encrypt archive type $opt_type_arg"
 	test -n "${opt_size:-}" && \
 	  fail "Can't create volumes with archive type $opt_type_arg"
-	# TODO compression
+	if [ -n "${opt_compress:-}" ]; then
+	  case $opt_compress_arg in
+	    bzip2)
+	      archive_arguments="${archive_arguments}j"
+	      archive_filename_extension="${archive_filename_extension}.bzip2"
+	      ;;
+	    gzip)
+	      archive_arguments="${archive_arguments}z"
+	      archive_filename_extension="${archive_filename_extension}.gz"
+	      ;;
+	    xz)
+	      archive_arguments="${archive_arguments}J"
+	      archive_filename_extension="${archive_filename_extension}.xz"
+	      ;;
+	    *)
+	      fail "Unsupported compression method $opt_compress_arg for archive type $opt_type_arg"
+	  esac
+	fi
 fi
 
 if [ $# -eq 0 ]; then
@@ -222,7 +285,7 @@ trap 'rm -rf "$tmpdir"' EXIT
 
 test -z "${archive_basename:-}" && archive_basename=$(uuidgen | tr 'A-Z' 'a-z')
 test -z "${upload_in_place:-}" && \
-  $archive_command $archive_arguments "${tmpdir}/$archive_basename" "$@"
+  $archive_command $archive_arguments "${tmpdir}/$archive_basename${archive_filename_extension}" "$@"
 
 echo
 
