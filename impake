@@ -14,7 +14,7 @@ usage() {
 	echo "Usage: $me [options] file_or_directory ..."
 	echo
 	echo '       -c, --compress Compression method:'
-	echo '                      single file: bzip2, gzip, lzma, xz'
+	echo '                      single file: bzip2, gzip, xz'
 	echo '                      zip:         bzip2, copy, deflate, deflate64, lzma, ppmd'
 	echo '                      7z:          bzip2, copy, deflate, lzma, lzma2, ppmd'
 	echo '                      tar:         bzip2, gzip, xz'
@@ -146,7 +146,25 @@ if [ -z "${opt_type:-}" -o "${opt_type_arg:-}" = 'none' ]; then
 	  fail "Can't encrypt archive type ${opt_type_arg}"
 	test -n "${opt_size:-}" && \
 	  fail "Can't create volumes with archive type ${opt_type_arg}"
-	# TODO compression
+	case $opt_compress_arg in
+		bzip2)
+			archive_command='7z'
+			archive_arguments='a -tbzip2'
+			archive_filename_extension='.bzip2'
+			;;
+		gzip)
+			archive_command='7z'
+			archive_arguments='a -tgzip'
+			archive_filename_extension='.gzip'
+			;;
+		xz)
+			archive_command='7z'
+			archive_arguments='a -txz'
+			archive_filename_extension='.xz'
+			;;
+		*)
+			fail "Unsupported compression method $opt_compress_arg for a single file"
+	esac
 elif [ "$opt_type_arg" = '7z' ]; then
 	archive_command='7z'
 	archive_arguments='a'
