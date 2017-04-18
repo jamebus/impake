@@ -143,9 +143,9 @@ if [ -z "${opt_type:-}" -o "${opt_type_arg:-}" = 'none' ]; then
 	archive_arguments=''
 	archive_filename_extension=''
 	test -n "${opt_encrypt:-}" && \
-	  fail "Can't encrypt archive type ${opt_type_arg}"
+	  fail "Can't encrypt archive type $opt_type_arg"
 	test -n "${opt_size:-}" && \
-	  fail "Can't create volumes with archive type ${opt_type_arg}"
+	  fail "Can't create volumes with archive type $opt_type_arg"
 	if [ -n "${opt_compress:-}" ]; then
 		archive_command='7z'
 		archive_basename="$@"
@@ -191,9 +191,9 @@ elif [ "$opt_type_arg" = 'tar' ]; then
 	archive_arguments='cvf'
 	archive_filename_extension='.tar'
 	test -n "${opt_encrypt:-}" && \
-	  fail "Can't encrypt archive type ${opt_type_arg}"
+	  fail "Can't encrypt archive type $opt_type_arg"
 	test -n "${opt_size:-}" && \
-	  fail "Can't create volumes with archive type ${opt_type_arg}"
+	  fail "Can't create volumes with archive type $opt_type_arg"
 	# TODO compression
 fi
 
