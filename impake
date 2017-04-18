@@ -139,7 +139,7 @@ if [ -z "${opt_type:-}" -a -n "${have_things:-}" ]; then
 fi
 
 if [ -z "${opt_type:-}" -o "${opt_type_arg:-}" = 'none' ]; then
-	archive_command=''
+	archive_command='cp'
 	archive_arguments=''
 	archive_filename_extension=''
 	test -n "${opt_encrypt:-}" && \
