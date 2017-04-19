@@ -24,6 +24,7 @@ usage() {
 	echo '                      zip and 7z only'
 	echo '       -t, --type     Archive type:'
 	echo '                      none (single file), zip, 7z, tar'
+	echo '       -x, --expire   Expire the file in N[mdy]'
 	echo
 	echo "Sensible defaults will be chosen if an option isn't specified"
 	exit $rc
@@ -88,6 +89,10 @@ while [ $# -ne 0 ]; do
 		-t|--type)
 			opt_type='1'
 			opt_type_arg="$arg"
+			;;
+		-x|--expire)
+			opt_expire='1'
+			opt_expire_arg="$arg"
 			;;
 		-*|--*)
 			fail "Unknown option: $opt"
@@ -260,7 +265,7 @@ elif [ "$opt_type_arg" = 'tar' ]; then
 	fi
 fi
 
-# TODO validate expiration
+# TODO validate and implement expiration
 #
 # The query param expires must be a positive integer which, by default,
 # represents the number of days until the file will be deleted (defaults to 14
@@ -268,6 +273,9 @@ fi
 # and y for years.
 #
 # See if I can use d also
+if [ -n "${opt_expire:-}" ]; then
+	: ${opt_expire_arg:=${default_expiry}}
+fi
 
 if [ $# -eq 0 ]; then
 	echo 'Cowardly refusing to send nothing'
@@ -315,7 +323,7 @@ fi
 
 for f in $files; do
 	for t in 1 2 3 4 5 6; do
-		response=$(curl -F "file=@${f}" "${storage_url}/?${expires_parameter}=${default_expiry}")
+		response=$(curl -F "file=@${f}" "${storage_url}/?${expires_parameter}=${opt_expire_arg}")
 		test "$(echo "$response" | jq -r '.success'  2>/dev/null)" = 'true' && break
 		test $t -eq 6 || echo "Upload failed, retrying: ${t}/5" 1>&2
 		sleep "$upload_failure_throttle"
