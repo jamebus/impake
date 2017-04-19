@@ -173,9 +173,9 @@ elif [ "$opt_type_arg" = '7z' ]; then
 	archive_arguments='a'
 	archive_filename_extension='.7z'
 	test -n "${opt_encrypt:-}" && \
-	  $archive_arguments="$archive_arguments -p -mhe=on"
+	  archive_arguments="$archive_arguments -p -mhe=on"
 	test -n "${opt_size:-}" && \
-	  $archive_arguments="$archive_arguments -v${$opt_size_arg}"
+	  archive_arguments="$archive_arguments -v${opt_size_arg}"
 	if [ -n "${opt_compress:-}" ]; then
 	  case $opt_compress_arg in
 	    bzip2)
@@ -205,9 +205,9 @@ elif [ "$opt_type_arg" = 'zip' ]; then
 	archive_arguments='a -tzip'
 	archive_filename_extension='.zip'
 	test -n "${opt_encrypt:-}" && \
-	  $archive_arguments="$archive_arguments -p"
+	  archive_arguments="$archive_arguments -p"
 	test -n "${opt_size:-}" && \
-	  $archive_arguments="$archive_arguments -v${$opt_size_arg}"
+	  archive_arguments="$archive_arguments -v${$opt_size_arg}"
 	if [ -n "${opt_compress:-}" ]; then
 	  case $opt_compress_arg in
 	    bzip2)
