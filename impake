@@ -72,21 +72,21 @@ while [ $# -ne 0 ]; do
 
 	case $opt in
 		-c|--compress)
-			opt_compress="1"
+			opt_compress='1'
 			opt_compress_arg="$arg"
 			;;
 		-e|--encrypt)
-			opt_encrypt="1"
+			opt_encrypt='1'
 			;;
 		-h|--help)
 			usage
 			;;
 		-s|--size)
-			opt_size="1"
+			opt_size='1'
 			opt_size_arg="$arg"
 			;;
 		-t|--type)
-			opt_type="1"
+			opt_type='1'
 			opt_type_arg="$arg"
 			;;
 		-*|--*)
