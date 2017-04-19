@@ -332,8 +332,8 @@ for f in $files; do
 			fail 'Aborting after 5 attempts.'
 		fi
 	done
-	urls="${urls:-}$(echo "$response" | jq -r '.link') "
-	expiry=$(echo "$response" | jq -r '.expiry')
+	urls="${urls:-}$(echo "$response" | jq -r '.link' 2>/dev/null) "
+	expiry=$(echo "$response" | jq -r '.expiry'  2>/dev/null)
 done
 
 echo
