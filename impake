@@ -272,9 +272,10 @@ fi
 # days). If you follow it with w, it will be the number of weeks. m for months
 # and y for years.
 #
-# See if I can use d also
-if [ -n "${opt_expire:-}" ]; then
-	: ${opt_expire_arg:=${default_expiry}}
+# d also works, and if you don't specify, it will assume days
+#
+if [ -z "${opt_expire:-}" ]; then
+	opt_expire_arg="$default_expiry"
 fi
 
 if [ $# -eq 0 ]; then
