@@ -312,19 +312,19 @@ if [ -z "${upload_in_place:-}" ]; then
 	     ! -f "${tmpdir}/${archive_basename}${archive_filename_extension}.002" ]; then
 		mv "${tmpdir}/${archive_basename}${archive_filename_extension}.001" \
 		  "${tmpdir}/${archive_basename}${archive_filename_extension}"
-		files="${tmpdir}/${archive_basename}${archive_filename_extension}"
+		echo "${tmpdir}/${archive_basename}${archive_filename_extension}" > "${tmpdir}/files"
 	elif [ -f "${tmpdir}/${archive_basename}${archive_filename_extension}.001" ]; then
-		files="${tmpdir}/${archive_basename}${archive_filename_extension}.*"
+		ls -1 "${tmpdir}/${archive_basename}${archive_filename_extension}.*" > "${tmpdir}/files"
 	else
-		files="${tmpdir}/${archive_basename}${archive_filename_extension}"
+		echo "${tmpdir}/${archive_basename}${archive_filename_extension}" > "${tmpdir}/files"
 	fi
 else
-	files=$(realpath "$@")
+	realpath "$@" > "${tmpdir}/files"
 fi
 
-for f in $files; do
+while read f; do
 	for t in 1 2 3 4 5 6; do
-		response=$(curl -F "file=@${f}" "${storage_url}/?${expires_parameter}=${opt_expire_arg}")
+		response=$(curl -F file=@"${f}" "${storage_url}/?${expires_parameter}=${opt_expire_arg}")
 		test "$(echo "$response" | jq -r '.success'  2>/dev/null)" = 'true' && break
 		if [ $t -lt 6 ]; then
 			echo "Upload failed, retrying: ${t}/5" 1>&2
@@ -335,7 +335,7 @@ for f in $files; do
 	done
 	urls="${urls:-}$(echo "$response" | jq -r '.link' 2>/dev/null) "
 	expiry=$(echo "$response" | jq -r '.expiry'  2>/dev/null)
-done
+done < "${tmpdir}/files"
 
 echo
 for url in $urls; do
