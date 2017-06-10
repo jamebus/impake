@@ -314,7 +314,7 @@ if [ -z "${upload_in_place:-}" ]; then
 		  "${tmpdir}/${archive_basename}${archive_filename_extension}"
 		echo "${tmpdir}/${archive_basename}${archive_filename_extension}" > "${tmpdir}/files"
 	elif [ -f "${tmpdir}/${archive_basename}${archive_filename_extension}.001" ]; then
-		ls -1 "${tmpdir}/${archive_basename}${archive_filename_extension}.*" > "${tmpdir}/files"
+		ls -1 "${tmpdir}/${archive_basename}${archive_filename_extension}."* > "${tmpdir}/files"
 	else
 		echo "${tmpdir}/${archive_basename}${archive_filename_extension}" > "${tmpdir}/files"
 	fi
