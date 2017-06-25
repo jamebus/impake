@@ -324,7 +324,7 @@ fi
 
 while read f; do
 	for t in 1 2 3 4 5 6; do
-		response=$(curl -F file=@"${f}" "${storage_url}/?${expires_parameter}=${opt_expire_arg}")
+		response=$(curl --http1.1 -F file=@"${f}" "${storage_url}/?${expires_parameter}=${opt_expire_arg}")
 		test "$(echo "$response" | jq -r '.success'  2>/dev/null)" = 'true' && break
 		if [ $t -lt 6 ]; then
 			echo "Upload failed, retrying: ${t}/5" 1>&2
