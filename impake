@@ -2,6 +2,8 @@
 
 set -eu
 
+version='1.0.0'
+
 me="${0##*/}"
 default_expiry='1w'
 storage_url='https://file.io'
@@ -25,9 +27,15 @@ usage() {
 	echo '       -t, --type     Archive type:'
 	echo '                      none (single file), zip, 7z, tar'
 	echo '       -x, --expire   Expire the file in N[mdy]'
+	echo '       --version      Show version info'
 	echo
 	echo "Sensible defaults will be chosen if an option isn't specified"
 	exit $rc
+}
+
+version() {
+	echo "$me version $version"
+	exit
 }
 
 suggest_help() {
@@ -93,6 +101,9 @@ while [ $# -ne 0 ]; do
 		-x|--expire)
 			opt_expire='1'
 			opt_expire_arg="$arg"
+			;;
+		--version)
+			version
 			;;
 		-*|--*)
 			fail "Unknown option: $opt"
