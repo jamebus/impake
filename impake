@@ -2,7 +2,7 @@
 
 set -eu
 
-version='1.0.0'
+version='1.0.1'
 
 me="${0##*/}"
 default_expiry='1w'
@@ -223,7 +223,7 @@ elif [ "$opt_type_arg" = 'zip' ]; then
 	test -n "${opt_encrypt:-}" && \
 	  archive_arguments="$archive_arguments -p"
 	test -n "${opt_size:-}" && \
-	  archive_arguments="$archive_arguments -v${$opt_size_arg}"
+	  archive_arguments="$archive_arguments -v${opt_size_arg}"
 	if [ -n "${opt_compress:-}" ]; then
 	  case $opt_compress_arg in
 	    bzip2)
