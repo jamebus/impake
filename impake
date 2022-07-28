@@ -349,11 +349,11 @@ while read f; do
 		fi
 	done
 	urls="${urls:-}$(echo "$response" | jq -r '.link' 2>/dev/null) "
-	expiry=$(echo "$response" | jq -r '.expiry'  2>/dev/null)
+	expires=$(echo "$response" | jq -r '.expires'  2>/dev/null)
 done < "${tmpdir}/files"
 
 echo
 for url in $urls; do
-	echo "URL:    $url"
+	echo "URL:     $url"
 done
-echo "Expiry: $expiry"
+echo "Expires: $expires"
