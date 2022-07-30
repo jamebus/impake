@@ -11,6 +11,7 @@ expires_parameter='expires'
 upload_failure_throttle='30'
 
 usage() {
+	# shellcheck disable=SC3043
 	local rc
 	rc=${1:-0}
 	echo "Usage: $me [options] file_or_directory ..."
@@ -30,7 +31,7 @@ usage() {
 	echo '       --version      Show version info'
 	echo
 	echo "Sensible defaults will be chosen if an option isn't specified"
-	exit $rc
+	exit "$rc"
 }
 
 version() {
@@ -105,7 +106,7 @@ while [ $# -ne 0 ]; do
 		--version)
 			version
 			;;
-		-*|--*)
+		-*)
 			fail "Unknown option: $opt"
 			;;
 		*)
@@ -141,20 +142,20 @@ if [ -n "${opt_compress:-}" ]; then
 esac
 fi
 
-if [ -z "${opt_type:-}" -a \
-     \( -n "${opt_encrypt:-}" -o -n "${opt_size:-}" \) ]; then
+if [ -z "${opt_type:-}" ] && \
+     { [ -n "${opt_encrypt:-}" ] || [ -n "${opt_size:-}" ]; }; then
 	opt_type='1'
 	opt_type_arg='7z'
 	notice 'Using 7z(1) to build the archive'
 fi
 
-if [ -z "${opt_type:-}" -a -n "${have_things:-}" ]; then
+if [ -z "${opt_type:-}" ] && [ -n "${have_things:-}" ]; then
 	opt_type='1'
 	opt_type_arg='tar'
 	notice 'Using tar(1) to build the archive'
 fi
 
-if [ -z "${opt_type:-}" -o "${opt_type_arg:-}" = 'none' ]; then
+if [ -z "${opt_type:-}" ] || [ "${opt_type_arg:-}" = 'none' ]; then
 	archive_command=''
 	archive_arguments=''
 	archive_filename_extension=''
@@ -164,7 +165,7 @@ if [ -z "${opt_type:-}" -o "${opt_type_arg:-}" = 'none' ]; then
 	  fail "Can't create volumes with archive type $opt_type_arg"
 	if [ -n "${opt_compress:-}" ]; then
 		archive_command='7z'
-		archive_basename="$@"
+		archive_basename="$1"
 		case $opt_compress_arg in
 			bzip2)
 				archive_arguments='a -tbzip2'
@@ -316,6 +317,7 @@ else
 fi
 trap 'rm -rf "$tmpdir"' EXIT
 
+# shellcheck disable=SC2018 disable=SC2019
 test -z "${archive_basename:-}" && archive_basename=$(uuidgen | tr 'A-Z' 'a-z')
 test -z "${upload_in_place:-}" && \
   $archive_command $archive_arguments "${tmpdir}/$archive_basename${archive_filename_extension}" "$@"
@@ -323,8 +325,8 @@ test -z "${upload_in_place:-}" && \
 echo
 
 if [ -z "${upload_in_place:-}" ]; then
-	if [ -f "${tmpdir}/${archive_basename}${archive_filename_extension}.001" -a \
-	     ! -f "${tmpdir}/${archive_basename}${archive_filename_extension}.002" ]; then
+	if [ -f "${tmpdir}/${archive_basename}${archive_filename_extension}.001" ] && \
+	     [ ! -f "${tmpdir}/${archive_basename}${archive_filename_extension}.002" ]; then
 		mv "${tmpdir}/${archive_basename}${archive_filename_extension}.001" \
 		  "${tmpdir}/${archive_basename}${archive_filename_extension}"
 		echo "${tmpdir}/${archive_basename}${archive_filename_extension}" > "${tmpdir}/files"
@@ -337,7 +339,7 @@ else
 	realpath "$@" > "${tmpdir}/files"
 fi
 
-while read f; do
+while IFS= read -r f; do
 	for t in 1 2 3 4 5 6; do
 		response=$(curl -F file=@"${f}" "${storage_url}/?${expires_parameter}=${opt_expire_arg}")
 		test "$(echo "$response" | jq -r '.success'  2>/dev/null)" = 'true' && break
